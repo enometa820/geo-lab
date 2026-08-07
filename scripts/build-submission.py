@@ -87,7 +87,7 @@ th{color:var(--ink-muted);font-weight:600;font-size:8.6pt;
 td{color:var(--ink-body);font-variant-numeric:tabular-nums}
 td:first-child{color:var(--ink-strong)}
 code{background:var(--surface-inset);padding:.4mm 1.2mm;border-radius:1mm;
-  font-size:.92em;word-break:break-all}
+  font-size:.92em;overflow-wrap:break-word}
 pre{background:var(--surface-inset);padding:3.5mm 4mm;border-radius:2mm;
   overflow-x:auto;font-size:8.8pt;line-height:1.55}
 pre code{background:none;padding:0}

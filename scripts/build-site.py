@@ -57,7 +57,6 @@ TOKENS = """
   --ink-strong:#0b0b0b; --ink-body:#52514e; --ink-muted:#767570;
   --line-edge:rgba(11,11,11,.10);
   --accent:#2a78d6;
-  --btn-surface:#0b0b0b; --btn-ink:#fcfcfb;
 }
 @media (prefers-color-scheme:dark){
   :root:where(:not([data-theme="light"])){
@@ -66,8 +65,16 @@ TOKENS = """
     --ink-strong:#ffffff; --ink-body:#c3c2b7; --ink-muted:#98968e;
     --line-edge:rgba(255,255,255,.10);
     --accent:#3987e5;
-    --btn-surface:#ffffff; --btn-ink:#0d0d0d;
   }
+}
+/* 미디어 쿼리는 운영체제 설정만 따른다. 이 블록이 없으면 명시적 지정이
+   먹지 않아 다크 모드를 확인조차 할 수 없다 — 실제로 그래서 못 볼 뻔했다. */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --surface-page:#0d0d0d; --surface-card:#1a1a19; --surface-inset:#232322;
+  --ink-strong:#ffffff; --ink-body:#c3c2b7; --ink-muted:#98968e;
+  --line-edge:rgba(255,255,255,.10);
+  --accent:#3987e5;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--surface-page)}
@@ -89,7 +96,9 @@ a:hover{text-decoration:underline}
 .back{display:inline-block;margin-bottom:18px;font-size:14px;color:var(--ink-muted)}
 .back:hover{color:var(--ink-strong)}
 code{background:var(--surface-inset);padding:1px 5px;border-radius:4px;
-  font-size:.9em;word-break:break-all}
+  font-size:.9em;overflow-wrap:break-word}
+/* break-all 은 'D1' 같은 두 글자 식별자까지 쪼갠다. 표의 좁은 칸에서 드러난다.
+   break-word 는 한 줄에 못 담을 때만 끊고 최소 폭 계산도 망가뜨리지 않는다. */
 pre{background:var(--surface-inset);padding:14px 16px;border-radius:8px;
   overflow-x:auto;font-size:13px;line-height:1.6}
 pre code{background:none;padding:0}
@@ -128,16 +137,27 @@ h1{font-size:31px;line-height:1.34;margin:0 0 22px;max-width:22ch}
   padding:18px 20px;border-radius:12px;background:var(--surface-inset);margin-bottom:26px}
 .num{font-size:50px;font-weight:600;line-height:1;letter-spacing:-.02em}
 .numsub{color:var(--ink-body);font-size:14.5px;flex:1 1 320px;margin:0}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:8px 0 4px}
-.tile{display:block;padding:20px 22px;border:1px solid var(--line-edge);border-radius:12px;
+/* 타일은 전부 같은 표면을 쓴다. 하나만 반전시키면 "누를 것"이 아니라
+   "지금 보고 있는 페이지"로 읽힌다 — 반전 채우기는 활성 상태의 관습이다.
+   위계는 색이 아니라 크기·테두리·행동 문구로 준다. */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:8px 0 4px}
+.tile{display:flex;flex-direction:column;padding:20px 22px;
+  border:1px solid var(--line-edge);border-radius:12px;
   background:var(--surface-card);color:inherit}
-.tile:hover{border-color:var(--ink-muted);text-decoration:none}
+.tile:hover{border-color:var(--accent);text-decoration:none}
 .tile .n{color:var(--ink-muted);font-size:12px}
 .tile .t{font-size:17px;font-weight:600;margin:4px 0 6px;color:var(--ink-strong)}
 .tile .d{font-size:13.5px;color:var(--ink-body);margin:0}
-.tile.primary{background:var(--btn-surface);border-color:var(--btn-surface)}
-.tile.primary .t,.tile.primary .d,.tile.primary .n{color:var(--btn-ink)}
-.tile.primary .d,.tile.primary .n{opacity:.82}
+.tile .cta{margin-top:auto;padding-top:12px;color:var(--accent);
+  font-size:14px;font-weight:600}
+.tile:hover .cta{text-decoration:underline}
+
+/* 주 행동은 한 줄을 통째로 차지한다. 4개가 3+1 로 갈라져 마지막 하나가
+   외톨이가 되던 것도 함께 해결된다. */
+.tile.primary{grid-column:1 / -1;border:2px solid var(--accent);padding:24px 26px}
+.tile.primary .t{font-size:21px}
+.tile.primary .d{font-size:14.5px;max-width:62ch}
+.tile.primary .cta{font-size:15px}
 .meta{color:var(--ink-body);font-size:13.5px;margin:0}
 .meta+.meta{margin-top:8px}
 """
@@ -178,11 +198,12 @@ def doc_page(md_path: Path, title: str) -> str:
 def index_page(facts: dict) -> str:
     tiles = "".join(
         f'<a class="tile" href="{href}"><div class="n">{n}</div>'
-        f'<div class="t">{title}</div><p class="d">{desc}</p></a>'
-        for n, href, title, desc in [
-            ("문항 1", "munhang1.html", "좋은 GEO의 기준", "기준 3가지와 근거"),
-            ("문항 2", "munhang2.html", "측정 도구 PRD", "기능 2개와 우선순위 근거"),
-            ("부록", "worklog.html", "작업 기록", "무엇을 버렸고 왜"),
+        f'<div class="t">{title}</div><p class="d">{desc}</p>'
+        f'<span class="cta">{cta} &rarr;</span></a>'
+        for n, href, title, desc, cta in [
+            ("문항 1", "munhang1.html", "좋은 GEO의 기준", "기준 3가지와 근거", "답안 읽기"),
+            ("문항 2", "munhang2.html", "측정 도구 PRD", "기능 2개와 우선순위 근거", "답안 읽기"),
+            ("부록", "worklog.html", "작업 기록", "무엇을 버렸고 왜", "기록 보기"),
         ]
     )
     return f"""<!doctype html>
@@ -221,9 +242,10 @@ def index_page(facts: dict) -> str:
   <div class="grid">
     <a class="tile primary" href="report.html">
       <div class="n">실측 리포트</div>
-      <div class="t">직접 재본 결과</div>
+      <div class="t">직접 재본 결과 보기</div>
       <p class="d">브랜드 20개의 언급률과 신뢰구간, 질문 종류별 분해, 그리고 <strong>답변 원문 {facts['calls']}건</strong>이
-        페이지 안에 들어 있습니다.</p>
+        페이지 안에 들어 있습니다. 여기부터 보시면 나머지 문서가 무엇을 근거로 쓰였는지 바로 보입니다.</p>
+      <span class="cta">리포트 열기 &rarr;</span>
     </a>
     {tiles}
   </div>
