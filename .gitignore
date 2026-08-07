@@ -1,0 +1,17 @@
+# 자격증명 — 어떤 형태로도 커밋하지 않는다
+.env
+.env.*
+*.key
+*.pem
+secrets/
+
+# 파이썬
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# OS
+Thumbs.db
+.DS_Store
