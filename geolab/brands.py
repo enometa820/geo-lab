@@ -115,6 +115,89 @@ def detect_mentions(text: str, brands: tuple[Brand, ...] = BRANDS) -> set[str]:
     }
 
 
+def first_positions(text: str, brands: tuple[Brand, ...] = BRANDS) -> dict[str, int]:
+    """브랜드별 **첫 등장 문자 위치**. 언급되지 않은 브랜드는 키에 없다.
+
+    `detect_mentions` 가 "나왔는가"만 답하는 데 비해 이쪽은 "어디에 나왔는가"를
+    답한다. 둘을 나눠 둔 이유는 쓰임이 다르기 때문이다 — 언급률 집계에는 위치가
+    필요 없고, 위치를 섞으면 베르누이 시행이라는 성격이 흐려진다.
+
+    위치가 필요한 이유는 **답변에서 몇 번째로 불리느냐가 노출의 질을 가르기**
+    때문이다. 20개 목록의 맨 끝에 붙는 것과 첫 문단에서 추천되는 것은 같은
+    "언급 1회"지만 사용자에게 도달하는 정도가 다르다.
+
+    한 브랜드의 별칭이 여러 개면 **가장 앞선 위치**를 쓴다. 어느 표기로 불렸든
+    처음 등장한 자리가 그 브랜드의 자리다.
+    """
+    if not text:
+        return {}
+
+    compiled = (
+        _COMPILED
+        if brands is BRANDS
+        else {b.canonical: tuple(_pattern_for(a) for a in b.aliases) for b in brands}
+    )
+
+    positions: dict[str, int] = {}
+    for canonical, patterns in compiled.items():
+        found = [m.start() for p in patterns if (m := p.search(text))]
+        if found:
+            positions[canonical] = min(found)
+    return positions
+
+
+def match_spans(text: str, canonical: str, brands: tuple[Brand, ...] = BRANDS) -> tuple[tuple[int, int], ...]:
+    """한 브랜드가 실제로 매칭된 모든 구간 `(시작, 끝)`.
+
+    리포트에서 원 응답의 근거를 표시할 때 쓴다. **탐지에 쓴 것과 같은 패턴에서
+    구간을 뽑는 것이 핵심이다** — 화면에 표시하는 규칙을 따로 만들면 표시된 것과
+    집계된 것이 어긋나고, 그 순간 근거 제시가 근거를 무너뜨린다.
+
+    겹치는 구간은 합친다. 별칭이 여러 개라 같은 자리가 두 번 잡힐 수 있다
+    (예: "Microsoft Teams" 와 "MS Teams" 는 안 겹치지만, 표기를 늘리다 보면 겹친다).
+    """
+    if not text:
+        return ()
+
+    compiled = (
+        _COMPILED
+        if brands is BRANDS
+        else {b.canonical: tuple(_pattern_for(a) for a in b.aliases) for b in brands}
+    )
+    patterns = compiled.get(canonical)
+    if not patterns:
+        return ()
+
+    found = sorted(
+        (m.start(), m.end()) for p in patterns for m in p.finditer(text)
+    )
+    if not found:
+        return ()
+
+    merged = [found[0]]
+    for start, end in found[1:]:
+        last_start, last_end = merged[-1]
+        if start <= last_end:
+            merged[-1] = (last_start, max(last_end, end))
+        else:
+            merged.append((start, end))
+    return tuple(merged)
+
+
+def mention_ranks(text: str, brands: tuple[Brand, ...] = BRANDS) -> dict[str, int]:
+    """첫 등장 순서로 매긴 순위. 가장 먼저 나온 브랜드가 1위다.
+
+    위치(문자 인덱스)가 아니라 순위를 따로 두는 이유는 **응답 길이가 제각각**이기
+    때문이다. 3000자 응답의 900번째 문자와 600자 응답의 900번째 문자는 같은
+    위치지만 전혀 다른 자리다. 순위는 그 길이 차이에 영향받지 않는다.
+
+    동점은 생기지 않는다 — 문자 위치가 같을 수 없기 때문이다.
+    """
+    positions = first_positions(text, brands)
+    ordered = sorted(positions.items(), key=lambda kv: kv[1])
+    return {canonical: rank for rank, (canonical, _) in enumerate(ordered, start=1)}
+
+
 def excluded_aliases(brands: tuple[Brand, ...] = BRANDS) -> dict[str, tuple[str, ...]]:
     """일부러 매칭하지 않는 표기 목록.
 

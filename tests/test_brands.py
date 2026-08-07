@@ -6,7 +6,15 @@
 
 import pytest
 
-from geolab.brands import BRANDS, Brand, detect_mentions, excluded_aliases
+from geolab.brands import (
+    BRANDS,
+    Brand,
+    detect_mentions,
+    excluded_aliases,
+    first_positions,
+    match_spans,
+    mention_ranks,
+)
 
 
 class TestBasicDetection:
@@ -104,6 +112,94 @@ class TestCustomBrands:
     def test_brand_requires_at_least_one_alias(self):
         with pytest.raises(ValueError):
             Brand("Empty", ())
+
+
+class TestPositionsAndRanks:
+    """순위는 언급률보다 탐지 한계에 민감하다. 그 성질을 고정해 둔다."""
+
+    def test_position_is_first_occurrence(self):
+        text = "Trello 를 쓰다가 Slack 으로 옮겼고 다시 Trello 를 봤다"
+        positions = first_positions(text)
+
+        assert positions["Trello"] == 0
+        assert positions["Slack"] == text.index("Slack")
+
+    def test_unmentioned_brand_is_absent_not_zero(self):
+        """0을 돌려주면 '맨 앞에 나왔다'와 구별되지 않는다."""
+        positions = first_positions("Slack 만 언급한다")
+
+        assert "Notion" not in positions
+
+    def test_earliest_alias_wins(self):
+        """같은 브랜드를 여러 표기로 부르면 가장 앞선 자리가 그 브랜드의 자리다."""
+        text = "슬랙 이야기를 먼저 하고 나중에 Slack 을 또 쓴다"
+        positions = first_positions(text)
+
+        assert positions["Slack"] == 0
+
+    def test_rank_follows_appearance_order(self):
+        text = "먼저 노션, 그 다음 슬랙, 마지막으로 Trello"
+
+        assert mention_ranks(text) == {"Notion": 1, "Slack": 2, "Trello": 3}
+
+    def test_ranks_are_dense_and_start_at_one(self):
+        ranks = mention_ranks("Slack 과 Notion 과 Jira")
+
+        assert sorted(ranks.values()) == [1, 2, 3]
+
+    def test_undetected_brand_shifts_ranks_forward(self):
+        """일부러 안 잡는 표기가 앞에 있으면 뒤 브랜드의 순위가 당겨진다.
+
+        이건 버그가 아니라 오탐 0 정책의 대가다. 리포트가 이 사실을 밝히지 않으면
+        순위가 실제보다 좋아 보인다.
+        """
+        text = "플로우가 먼저 나오고 그 다음 Slack 이 나온다"
+
+        assert mention_ranks(text) == {"Slack": 1}
+
+    def test_empty_text(self):
+        assert first_positions("") == {}
+        assert mention_ranks("") == {}
+
+
+class TestMatchSpans:
+    """화면에 표시하는 구간과 실제로 센 것이 어긋나면 근거 제시가 근거를 무너뜨린다."""
+
+    def test_spans_point_at_the_matched_text(self):
+        text = "우리는 Slack 을 쓴다"
+        spans = match_spans(text, "Slack")
+
+        assert len(spans) == 1
+        assert text[spans[0][0] : spans[0][1]] == "Slack"
+
+    def test_every_occurrence_is_returned(self):
+        spans = match_spans("Slack 과 슬랙 그리고 Slack", "Slack")
+
+        assert len(spans) == 3
+
+    def test_spans_are_sorted(self):
+        spans = match_spans("슬랙 뒤에 Slack", "Slack")
+
+        assert list(spans) == sorted(spans)
+
+    def test_ambiguous_alias_is_not_highlighted(self):
+        """세지 않은 표기를 표시하면 '왜 이건 안 셌나'는 질문이 생긴다."""
+        assert match_spans("업무 플로우를 정리하면", "Flow") == ()
+
+    def test_unmentioned_brand_returns_empty(self):
+        assert match_spans("Slack 만 있다", "Notion") == ()
+
+    def test_unknown_brand_returns_empty(self):
+        assert match_spans("아무 텍스트", "존재하지않는브랜드") == ()
+
+    def test_empty_text(self):
+        assert match_spans("", "Slack") == ()
+
+    def test_spans_agree_with_detection(self):
+        """탐지가 잡은 브랜드는 반드시 구간도 있어야 한다. 둘이 갈라지면 안 된다."""
+        text = "슬랙과 Notion 을 비교하면 Jira 도 후보다"
+        for canonical in detect_mentions(text):
+            assert match_spans(text, canonical), f"{canonical}: 탐지됐는데 구간이 없다"
 
 
 class TestBrandTable:
