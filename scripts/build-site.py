@@ -8,11 +8,14 @@
 PDF 첨부는 오프라인에서도 열린다는 보증이고, 링크는 **아무것도 내려받지 않고
 바로 본다**는 편의다. 둘은 대체 관계가 아니라 각자 다른 상황을 맡는다.
 
-## 무엇을 싣고 무엇을 빼는가
+## 무엇을 싣는가
 
-답안 마크다운과 실측 리포트를 싣는다. **제출자 실명은 싣지 않는다** — 공개
-저장소에서 메일 포장 문서를 뺀 것과 같은 판단이다. 메일을 받은 쪽은 보낸 사람을
-이미 알고, 공개 웹에 이름을 색인시킬 이유는 없다.
+답안 마크다운, 실측 리포트, 그리고 제출자 연락처를 싣는다.
+
+**연락처는 제출자가 넣기로 정한 것이다** (2026-08-08). 이 페이지는 검색에
+걸리지 않지만 URL 을 아는 사람은 누구나 열 수 있으므로 **수집 봇이 읽을 수
+있다.** 전화번호를 빼려면 `CONTACT["phone"]` 을 `None` 으로 두면 된다 —
+화면에서도 사라진다.
 
 ## 검색 색인은 막는다
 
@@ -41,6 +44,16 @@ ROOT = Path(__file__).resolve().parent.parent
 SUBMISSION = ROOT / "submission"
 REMOTE = "https://github.com/enometa820/geo-lab.git"
 REPO_URL = "https://github.com/enometa820/geo-lab"
+
+# 제출자 연락처. 이 페이지는 검색에 걸리지 않지만(noindex) URL 을 아는 사람은
+# 누구나 열 수 있으므로 **수집 봇이 읽을 수 있다.** 전화번호를 빼려면 여기서
+# phone 을 None 으로 두면 화면에서도 사라진다.
+CONTACT = {
+    "name": "이용진",
+    "email": "tototal5542@gmail.com",
+    "phone": "010-6684-4201",
+    "tel": "+821066844201",
+}
 
 PAGES = [
     ("01-문항1-좋은-GEO의-기준.md", "munhang1.html", "문항 1", "좋은 GEO의 기준 3가지"),
@@ -162,6 +175,29 @@ h1{font-size:31px;line-height:1.34;margin:0 0 22px;max-width:22ch}
 .meta+.meta{margin-top:8px}
 """
 
+CONTACT_CSS = """
+.contact{display:flex;flex-wrap:wrap;gap:10px 34px;align-items:baseline;margin-top:6px}
+.contact div{display:flex;gap:10px;align-items:baseline}
+.contact dt{color:var(--ink-muted);font-size:12.5px;margin:0}
+.contact dd{margin:0;font-size:14.5px;color:var(--ink-strong)}
+.contact a{font-size:14.5px}
+.sig{color:var(--ink-muted);font-size:13px;margin:18px 0 0}
+"""
+
+
+def contact_block(heading: bool = True) -> str:
+    """연락처. `CONTACT['phone']` 이 비면 전화 줄이 통째로 사라진다."""
+    rows = [
+        ("이름", f"<dd>{CONTACT['name']}</dd>"),
+        ("메일", f'<dd><a href="mailto:{CONTACT["email"]}">{CONTACT["email"]}</a></dd>'),
+    ]
+    if CONTACT.get("phone"):
+        rows.append(("전화", f'<dd><a href="tel:{CONTACT["tel"]}">{CONTACT["phone"]}</a></dd>'))
+
+    items = "".join(f"<div><dt>{label}</dt>{value}</div>" for label, value in rows)
+    title = '<h2 style="margin-top:0;border:none;padding:0;font-size:19px">연락처</h2>' if heading else ""
+    return f'<section class="card">{title}<dl class="contact">{items}</dl></section>'
+
 
 def render_markdown(md: str) -> str:
     html = markdown.markdown(
@@ -181,7 +217,7 @@ def doc_page(md_path: Path, title: str) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>{title} — GEO 측정</title>
-<style>{DOC_CSS}</style>
+<style>{DOC_CSS}{CONTACT_CSS}</style>
 </head>
 <body>
 <div class="wrap">
@@ -189,6 +225,7 @@ def doc_page(md_path: Path, title: str) -> str:
 <article class="card doc">
 {render_markdown(md_path.read_text(encoding="utf-8"))}
 </article>
+{contact_block()}
 </div>
 </body>
 </html>
@@ -214,7 +251,7 @@ def index_page(facts: dict) -> str:
 <meta name="robots" content="noindex, nofollow">
 <title>GEO 측정 — 과제 제출물</title>
 <meta name="description" content="AI 답변에 브랜드가 얼마나, 어떻게 등장하는지 실제로 측정한 기록과 그에 기반한 답안.">
-<style>{INDEX_CSS}</style>
+<style>{INDEX_CSS}{CONTACT_CSS}</style>
 </head>
 <body>
 <div class="wrap">
@@ -272,6 +309,8 @@ def index_page(facts: dict) -> str:
   <p class="meta">한계도 각 문서의 마지막 절에 적었습니다 &mdash; 엔진 하나, 카테고리 하나, 웹 검색 끔입니다.
     측정 도구와 원자료는 <a href="{REPO_URL}">GitHub 저장소</a>에 있습니다.</p>
 </section>
+
+{contact_block()}
 
 </div>
 </body>
