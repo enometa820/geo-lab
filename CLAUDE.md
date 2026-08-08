@@ -33,7 +33,7 @@ geo-lab/
 ├── submission/      과제 원문(불변) + 제출물
 ├── geolab/          측정 도구 (아래 표 참조)
 ├── tests/           순수 함수 테스트
-├── scripts/         보조 도구 — 제출물 포장 등
+├── scripts/         보조 도구 — 제출물 포장·공개본 발행
 ├── run.py           측정 실행
 ├── report.py        측정 폴더 → 자기완결 HTML 리포트
 └── worklog.py       저장소 상태 → 작업 기록 생성
@@ -42,6 +42,19 @@ geo-lab/
 **루트에는 진입점 셋만 둔다.** `python run.py` 로 바로 돌아가야 하는 것들이다. 그 외 보조 도구는 `scripts/` 에 산다 — 넷째부터 루트에 쌓기 시작하면 무엇이 주 진입점인지 흐려진다.
 
 **`submission/` 의 PDF 와 `report.html` 은 생성물이다.** 정본은 같은 이름의 마크다운과 측정 폴더 안의 리포트이고, `python scripts/build-submission.py` 가 다시 만든다. 손으로 고치면 다음 실행에서 덮어쓴다.
+
+### 바깥으로 나가는 것
+
+이 저장소는 사본 둘을 밖에 둔다. **둘 다 생성물이므로 직접 고치지 않는다.**
+
+| 어디 | 무엇 | 만드는 것 |
+|---|---|---|
+| [공개 저장소](https://github.com/enometa820/geo-lab) | 측정 도구·조사·판단 기록·실측 원자료 | `python scripts/publish-public.py` |
+| [사이트](https://enometa820.github.io/geo-lab/) | 답안과 실측 리포트를 한 링크로 | `python scripts/build-site.py` |
+
+**공개본에서 무엇을 빼는지는 `scripts/publish-public.py` 의 `EXCLUDE_PATHS` 가 정본이다.** 의뢰사 자료(과제 원문·기업 조사)와 발행 도구 자신이 거기 있다. 목록을 사람의 기억에 두면 다음 번에 하나를 빠뜨리므로 코드에 둔다.
+
+**push 전에 이력 전체를 검사하고 하나라도 걸리면 중단한다.** `--dry-run` 으로 먼저 확인한다. 한 번 공개된 것은 되돌릴 수 없다 — 실제로 한 번 유출을 냈고 그 기록이 판단 기록 D26 이다.
 
 **측정 산출물은 측정 폴더 안에 모은다.**
 

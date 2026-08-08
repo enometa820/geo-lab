@@ -22,6 +22,8 @@ GEO(Generative Engine Optimization, 생성형 검색엔진 최적화) 업계가 
 
 **읽는 순서** — [`research/01-GEO-메커니즘과-측정.md`](research/01-GEO-메커니즘과-측정.md) 부터. 무엇을 왜 그렇게 판단했는지는 [`docs/DECISIONS.md`](docs/DECISIONS.md)에 있다.
 
+**결과만 빠르게 보려면** — [답안과 실측 리포트를 모은 페이지](https://enometa820.github.io/geo-lab/)가 있다. 내려받을 것이 없고, 응답 원문 360건이 리포트 안에 들어 있다.
+
 ### 코드
 
 | 파일 | 하는 일 | 외부 의존성 |
