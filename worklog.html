@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>작업 기록 — GEO 측정</title>
+<style>
+:root{
+  color-scheme:light;
+  --surface-page:#f9f9f7; --surface-card:#fcfcfb; --surface-inset:#f1f0ec;
+  --ink-strong:#0b0b0b; --ink-body:#52514e; --ink-muted:#767570;
+  --line-edge:rgba(11,11,11,.10);
+  --accent:#2a78d6;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --surface-page:#0d0d0d; --surface-card:#1a1a19; --surface-inset:#232322;
+    --ink-strong:#ffffff; --ink-body:#c3c2b7; --ink-muted:#98968e;
+    --line-edge:rgba(255,255,255,.10);
+    --accent:#3987e5;
+  }
+}
+/* 미디어 쿼리는 운영체제 설정만 따른다. 이 블록이 없으면 명시적 지정이
+   먹지 않아 다크 모드를 확인조차 할 수 없다 — 실제로 그래서 못 볼 뻔했다. */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --surface-page:#0d0d0d; --surface-card:#1a1a19; --surface-inset:#232322;
+  --ink-strong:#ffffff; --ink-body:#c3c2b7; --ink-muted:#98968e;
+  --line-edge:rgba(255,255,255,.10);
+  --accent:#3987e5;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface-page)}
+body{
+  color:var(--ink-strong);
+  font-family:system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.75;
+  word-break:keep-all; overflow-wrap:break-word;
+  min-height:100vh;
+}
+h1,h2,h3,h4{text-wrap:balance;letter-spacing:-.01em}
+p,li,dd,td{text-wrap:pretty}
+.wrap{max-width:980px;margin:0 auto;padding:32px 20px 72px}
+.card{background:var(--surface-card);border:1px solid var(--line-edge);
+  border-radius:14px;padding:30px 32px;margin-bottom:22px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.eyebrow{margin:0 0 8px;color:var(--ink-muted);font-size:13px}
+.back{display:inline-block;margin-bottom:18px;font-size:14px;color:var(--ink-muted)}
+.back:hover{color:var(--ink-strong)}
+code{background:var(--surface-inset);padding:1px 5px;border-radius:4px;
+  font-size:.9em;overflow-wrap:break-word}
+/* break-all 은 'D1' 같은 두 글자 식별자까지 쪼갠다. 표의 좁은 칸에서 드러난다.
+   break-word 는 한 줄에 못 담을 때만 끊고 최소 폭 계산도 망가뜨리지 않는다. */
+pre{background:var(--surface-inset);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;font-size:13px;line-height:1.6}
+pre code{background:none;padding:0}
+blockquote{margin:16px 0;padding:14px 18px;background:var(--surface-inset);
+  border-radius:10px;color:var(--ink-body)}
+blockquote p:last-child{margin-bottom:0}
+table{border-collapse:collapse;width:100%;margin:14px 0 20px;font-size:14px;min-width:480px}
+.scroll{overflow-x:auto}
+th,td{text-align:left;padding:8px 14px 8px 0;border-bottom:1px solid var(--line-edge);
+  vertical-align:top}
+th{color:var(--ink-muted);font-weight:500;font-size:12.5px;white-space:nowrap}
+td{color:var(--ink-body);font-variant-numeric:tabular-nums}
+td:first-child{color:var(--ink-strong)}
+hr{border:none;border-top:1px solid var(--line-edge);margin:28px 0}
+
+.doc h1{font-size:29px;line-height:1.34;margin:0 0 22px;padding-bottom:16px;
+  border-bottom:2px solid var(--ink-strong)}
+.doc h2{font-size:21px;margin:38px 0 10px;padding-top:14px;border-top:1px solid var(--line-edge)}
+.doc h3{font-size:16.5px;margin:26px 0 8px}
+.doc h4{font-size:15px;margin:20px 0 6px}
+.doc p,.doc li{color:var(--ink-body);max-width:68ch}
+.doc strong{color:var(--ink-strong)}
+.doc ul,.doc ol{padding-left:22px}
+.doc li{margin-bottom:6px}
+
+.contact{display:flex;flex-wrap:wrap;gap:10px 34px;align-items:baseline;margin-top:6px}
+.contact div{display:flex;gap:10px;align-items:baseline}
+.contact dt{color:var(--ink-muted);font-size:12.5px;margin:0}
+.contact dd{margin:0;font-size:14.5px;color:var(--ink-strong)}
+.contact a{font-size:14.5px}
+.sig{color:var(--ink-muted);font-size:13px;margin:18px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="./">&#8592; 처음으로</a>
+<article class="card doc">
+<h1>작업 기록</h1>
+<blockquote>
+<p><strong>이 문서는 저장소 상태에서 자동 생성됩니다.</strong> 직접 고치지 마세요 — 다시 생성하면 사라집니다.
+내용을 바꾸려면 원천(판단 기록·조사 문서·측정 결과)을 고치고 <code>python worklog.py</code> 를 다시 실행합니다.</p>
+</blockquote>
+<p>결과만 보면 보이지 않는 것을 남기기 위한 문서입니다. <strong>무엇을 검토했고 무엇을 왜 버렸는지</strong>가 핵심입니다.</p>
+<hr>
+<h2>한눈에</h2>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>작업 기간</td>
+<td>2026-08-07 ~ 2026-08-08</td>
+</tr>
+<tr>
+<td>커밋</td>
+<td>18건</td>
+</tr>
+<tr>
+<td>조사 문서</td>
+<td>4편</td>
+</tr>
+<tr>
+<td>기록된 판단</td>
+<td>26건 — <strong>모두 무엇을 버렸는지 함께 적혀 있습니다</strong></td>
+</tr>
+<tr>
+<td>측정 실행</td>
+<td>본 측정 1회 · 연결 확인 2회</td>
+</tr>
+<tr>
+<td>자동 테스트</td>
+<td>154개 (수집된 케이스)</td>
+</tr>
+</tbody>
+</table></div>
+<h2>어떤 순서로 했나</h2>
+<p><strong>2026-08-07</strong></p>
+<ul>
+<li>정리 — geo-lab 착수 — GEO 조사 inbox 덤프 후 research 승격</li>
+<li>문서 — 도구 공식 문서 확인 — 가설 1건 기각, 주장 표현 정정</li>
+<li>기능 — 측정 도구 코어 + 과제 원문 + 세션 인계</li>
+</ul>
+<p><strong>2026-08-08</strong></p>
+<ul>
+<li>기능 — 1차 출처 재조사 + 측정 루프·CLI·작업기록 생성기</li>
+<li>기능 — 본 측정 360회 실행 — 원 응답과 관측 보존</li>
+<li>기능 — 2차 분석 모듈 — 순위·공동언급·군집보정 회귀·임베딩 군집화</li>
+<li>기능 — 자기완결 HTML 리포트 — 원 응답 내장과 근거 하이라이트</li>
+<li>문서 — 과제 답안 2편 작성 + 저장소 정합 갱신</li>
+<li>기능 — 제출 패키지 — 진입점 문서·PDF 변환기·PRD 상단 기준 절</li>
+<li>정리 — 공개본 생성 스크립트 — 제외 목록을 코드에 남긴다</li>
+<li>수정 — 공개본 검증기가 자기 자신에 걸리던 문제와 포장 파일 제외</li>
+<li>수정 — 발행 도구를 공개본에서 제외 — 검사 예외가 유출을 가렸다</li>
+<li>문서 — D26 — 공개본 유출과 그 원인 기록</li>
+<li>기능 — 링크 하나로 보는 사이트 + 메일 회신 초안</li>
+<li>수정 — 인덱스 타일이 '현재 페이지'로 읽히던 문제와 짧은 식별자 쪼개짐</li>
+<li>기능 — 제출자 연락처를 메일과 사이트에 넣는다</li>
+<li>문서 — 메일 초안의 링크 두 개를 한 블록으로 모았다</li>
+<li>정리 — 세션 종료 — 공개본·사이트를 진입점에 연결하고 인계 갱신</li>
+</ul>
+<h2>무엇을 버렸나</h2>
+<p>조사와 구현 중에 검토했다가 접은 것들입니다. <strong>접은 이유가 이 저장소의 판단 기준을 보여줍니다.</strong></p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th>무엇을 버렸나</th>
+<th>어떤 판단에서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>D1</code></td>
+<td>"조사하면서 바로 깔끔하게 쓰기". 빠르지만 쓰는 사람이 확신하는 것과 검증된 것이 섞인다</td>
+<td>조사를 인박스에 먼저 덤프하고, 판정을 거쳐 승격했다</td>
+</tr>
+<tr>
+<td><code>D2</code></td>
+<td>권위 있는 학술 출처를 근거로 그대로 쓰는 것. 가장 쉽고 가장 설득력 있어 보이는 선택지였다</td>
+<td>널리 인용되는 GEO 연구의 수치를 현재값으로 쓰지 않기로 했다</td>
+</tr>
+<tr>
+<td><code>D3</code></td>
+<td>한쪽을 택해 다른 쪽을 기각하는 것. 그리고 "둘 다 중요합니다"로 얼버무리는 것</td>
+<td>출처 충돌을 "상충"이 아니라 "순서"로 판정했다</td>
+</tr>
+<tr>
+<td><code>D4</code></td>
+<td>가장 인용하기 좋은 형태. 인과로 쓰면 문장이 훨씬 강해진다</td>
+<td>Ahrefs 수치를 상관으로만 쓴다</td>
+</tr>
+<tr>
+<td><code>D5</code></td>
+<td>12종의 기능 목록. 표를 채우면 조사가 풍부해 보인다</td>
+<td>검증하지 않은 도구 정보를 덤프에서 삭제했다</td>
+</tr>
+<tr>
+<td><code>D6</code></td>
+<td>지금 이걸 빈자리로 선언하는 것</td>
+<td>"틀린 인용을 재는 도구가 없다"를 아직 주장하지 않는다</td>
+</tr>
+<tr>
+<td><code>D7</code></td>
+<td>과정 문서를 폴더로 분리해 체계적으로 보이게 하는 것</td>
+<td>저장소 구조를 얇게 유지한다</td>
+</tr>
+<tr>
+<td><code>D8</code></td>
+<td>제품 차별점으로 쓰려던 축 하나. 답안에서 가장 강하게 쓸 수 있는 카드였다</td>
+<td>내 가설이 기각됐다 — "정확성 감지는 빈자리"는 틀렸다</td>
+</tr>
+<tr>
+<td><code>D9</code></td>
+<td>"이 문제를 아무도 안 짚는다" 계열의 서술 전부. 답안에서 가장 강하게 들리는 도입부였다</td>
+<td>이 저장소의 핵심 논지에 선행 연구가 있다 — 자기 서술을 바꿨다</td>
+</tr>
+<tr>
+<td><code>D10</code></td>
+<td>이 수치를 "AI에 노출되려면 무엇을 해야 하나"의 근거로 쓰는 것</td>
+<td>Ahrefs 판정을 한 단계 더 좁혔다 (D4 보강)</td>
+</tr>
+<tr>
+<td><code>D11</code></td>
+<td>"정확성 감지에도 신뢰구간이 없다"는 서술. 기준 2를 강화하는 데 쓸 수 있는 카드였다</td>
+<td>"도구들이 안 한다"와 "공개하지 않아 알 수 없다"를 구분했다</td>
+</tr>
+<tr>
+<td><code>D12</code></td>
+<td>정정 내용만 반영하고 틀렸던 기록은 지우는 것. 문서가 깔끔해진다</td>
+<td>회사 사실을 별도 문서로 분리하고, 초기 조사의 오류를 정정 기록으로 남겼다</td>
+</tr>
+<tr>
+<td><code>D13</code></td>
+<td>전술을 모아 목록으로 만드는 것. 가장 실용적으로 보이고 답안에서 표로 만들기 좋다</td>
+<td>처방에 근거 등급을 매기고, 등급 없는 것은 싣지 않기로 했다</td>
+</tr>
+<tr>
+<td><code>D14</code></td>
+<td>답안에서 "이렇게 하세요" 목록에 이 둘을 넣는 것. 독자 대부분이 기대하는 항목이라 빼면 허전해 보인다</td>
+<td>가장 널리 퍼진 처방 둘이 가시성 근거가 없음을 확인했다</td>
+</tr>
+<tr>
+<td><code>D15</code></td>
+<td>"흡수가 잘 되는 페이지의 특성"을 개선 처방으로 쓰는 것</td>
+<td>흡수 논문을 프레임으로만 쓰고 인과 근거로는 쓰지 않는다</td>
+</tr>
+<tr>
+<td><code>D16</code></td>
+<td>초안의 기준 3 "믿을 수 있게 재는가". 이미 써둔 것이라 그대로 가는 편이 빨랐다</td>
+<td>문항1의 기준 3가지를 확정했다 — 세 번째를 "확인 가능성"으로 잡는다</td>
+</tr>
+<tr>
+<td><code>D17</code></td>
+<td>기능 하나를 빌더 연계(진단 → 처방 → 큐샵 적용)로 설계하는 안. 차별성이 가장 크고 회사 입장에서 매력적으로 읽힌다</td>
+<td>PRD에서 스퀘어스 자산을 별도 절로 분리한다</td>
+</tr>
+<tr>
+<td><code>D18</code></td>
+<td>"실패는 어차피 제외되니 괜찮다"는 판단. 실제로 이 저장소는 실패 제외를 편향 방지 장치로 설계했으므로 그렇게 넘어가기 쉬웠다</td>
+<td>실패 제외 규칙이 거꾸로 편향을 만들 뻔했다 — 연결 확인에서 잡았다</td>
+</tr>
+<tr>
+<td><code>D19</code></td>
+<td>재측정. 인계 기록을 믿고 다시 돌렸다면 API 비용과 30분을 버렸고, 더 나쁘게는 같은 조건의 측정이 두 벌 생겨 어느 것이 정본인지 흐려졌을 것이다</td>
+<td>본 측정은 죽지 않았다 — 직전 세션의 판단을 정정한다</td>
+</tr>
+<tr>
+<td><code>D20</code></td>
+<td>저장소 전체에 이 의존성을 거는 것. 한 줄로 끝나고 코드도 단순해진다</td>
+<td>측정 코어의 무의존성을 지키고, 수치 라이브러리는 분석 모듈에만 넣었다</td>
+</tr>
+<tr>
+<td><code>D22</code></td>
+<td>둘 중 보기 좋은 쪽만 싣는 것. 단순 비교 쪽이 결론이 선명해 읽기 좋다</td>
+<td>두 분석 방법이 어긋난 것을 감추지 않고 리포트가 스스로 말하게 했다</td>
+</tr>
+<tr>
+<td><code>D23</code></td>
+<td>군집에 그럴듯한 이름을 붙여 "답변 유형 6가지를 발견했다"로 싣는 것</td>
+<td>임베딩 군집화는 부정적 결과가 나왔고, 그대로 싣는다</td>
+</tr>
+<tr>
+<td><code>D24</code></td>
+<td>가상의 브랜드를 만들어 넣는 것</td>
+<td>측정 대상 주인공을 실명 브랜드로 정했다</td>
+</tr>
+<tr>
+<td><code>D25</code></td>
+<td>원 응답 텍스트에서 검사기가 잡은 표현을 고치는 것</td>
+<td>원 응답을 리포트 안에 통째로 넣었다 — 그리고 검사기 경고를 남겨 두기로 했다</td>
+</tr>
+<tr>
+<td><code>D26</code></td>
+<td>"검사기는 예외로 두면 된다"는 판단</td>
+<td>공개 저장소에서 유출을 냈고, 원인은 "검사에서 예외를 둔 것"이었다</td>
+</tr>
+</tbody>
+</table></div>
+<p>각 항목의 상세한 이유는 <a href="../docs/DECISIONS.md"><code>docs/DECISIONS.md</code></a>에 있습니다.</p>
+<h2>조사 자산</h2>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>문서</th>
+<th>교차검증 출처</th>
+<th>내용 확인일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../research/01-GEO-메커니즘과-측정.md">GEO — 무엇이 일어나고, 무엇을 어떻게 측정하는가</a></td>
+<td>14</td>
+<td>2026-08-08</td>
+</tr>
+<tr>
+<td><a href="../research/02-스퀘어스-기업-사실확인.md">스퀘어스 — 기업 사실 확인</a></td>
+<td>8</td>
+<td>2026-08-13</td>
+</tr>
+<tr>
+<td><a href="../research/03-무엇이-실제로-통하는가.md">무엇이 실제로 통하는가 — 처방의 근거와 그 등급</a></td>
+<td>9</td>
+<td>2026-08-08</td>
+</tr>
+<tr>
+<td><a href="../research/04-AI-노출-측정-도구-시장.md">AI 노출 측정 도구 시장 — 무엇을 주고 무엇을 안 주는가</a></td>
+<td>6</td>
+<td>2026-08-08</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>내용 확인일</code>은 파일을 고친 날이 아니라 <strong>내용이 아직 맞다고 실제로 확인한 날</strong>입니다.</p>
+<h2>무엇을 실제로 쟀나</h2>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>측정 시각 (UTC)</th>
+<th>대상 모델</th>
+<th>프롬프트</th>
+<th>반복</th>
+<th>총 호출</th>
+<th>실패(표본 제외)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-08-07 18:20</td>
+<td>gpt-5.5-2026-04-23</td>
+<td>18개</td>
+<td>20회</td>
+<td>360회</td>
+<td>0회</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>실패한 호출은 표본에서 제외합니다.</strong> 실패를 '언급 안 됨'으로 세면 언급률이 아래로 편향됩니다.</p>
+<p>측정 조건을 함께 적는 이유는 <strong>조건 없는 수치는 재현할 수 없어 근거가 아니기</strong> 때문입니다.</p>
+<p>위 표에는 연결 확인용 소규모 실행 2회를 넣지 않았습니다.</p>
+<h2>이 기록의 한계</h2>
+<ul>
+<li><strong>커밋 단위로 묶은 흐름입니다.</strong> 커밋 사이에 있었던 시행착오는 드러나지 않습니다</li>
+<li><strong>판단 기록에 남긴 것만 보입니다.</strong> 기록하지 않고 지나간 판단은 여기 없습니다</li>
+<li><strong>측정 이력은 저장된 실행만 셉니다.</strong> 저장하지 않고 돌린 것은 여기 없습니다</li>
+<li><strong>연결 확인용 소규모 실행은 본 측정 표에서 제외했습니다.</strong> 섞으면 표본 규모를 오해하게 됩니다</li>
+</ul>
+</article>
+<section class="card"><h2 style="margin-top:0;border:none;padding:0;font-size:19px">연락처</h2><dl class="contact"><div><dt>이름</dt><dd>이용진</dd></div><div><dt>메일</dt><dd><a href="mailto:tototal5542@gmail.com">tototal5542@gmail.com</a></dd></div><div><dt>전화</dt><dd><a href="tel:+821066844201">010-6684-4201</a></dd></div></dl></section>
+</div>
+</body>
+</html>

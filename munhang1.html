@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>문항 1 — GEO 측정</title>
+<style>
+:root{
+  color-scheme:light;
+  --surface-page:#f9f9f7; --surface-card:#fcfcfb; --surface-inset:#f1f0ec;
+  --ink-strong:#0b0b0b; --ink-body:#52514e; --ink-muted:#767570;
+  --line-edge:rgba(11,11,11,.10);
+  --accent:#2a78d6;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --surface-page:#0d0d0d; --surface-card:#1a1a19; --surface-inset:#232322;
+    --ink-strong:#ffffff; --ink-body:#c3c2b7; --ink-muted:#98968e;
+    --line-edge:rgba(255,255,255,.10);
+    --accent:#3987e5;
+  }
+}
+/* 미디어 쿼리는 운영체제 설정만 따른다. 이 블록이 없으면 명시적 지정이
+   먹지 않아 다크 모드를 확인조차 할 수 없다 — 실제로 그래서 못 볼 뻔했다. */
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --surface-page:#0d0d0d; --surface-card:#1a1a19; --surface-inset:#232322;
+  --ink-strong:#ffffff; --ink-body:#c3c2b7; --ink-muted:#98968e;
+  --line-edge:rgba(255,255,255,.10);
+  --accent:#3987e5;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--surface-page)}
+body{
+  color:var(--ink-strong);
+  font-family:system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+  font-size:16px; line-height:1.75;
+  word-break:keep-all; overflow-wrap:break-word;
+  min-height:100vh;
+}
+h1,h2,h3,h4{text-wrap:balance;letter-spacing:-.01em}
+p,li,dd,td{text-wrap:pretty}
+.wrap{max-width:980px;margin:0 auto;padding:32px 20px 72px}
+.card{background:var(--surface-card);border:1px solid var(--line-edge);
+  border-radius:14px;padding:30px 32px;margin-bottom:22px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.eyebrow{margin:0 0 8px;color:var(--ink-muted);font-size:13px}
+.back{display:inline-block;margin-bottom:18px;font-size:14px;color:var(--ink-muted)}
+.back:hover{color:var(--ink-strong)}
+code{background:var(--surface-inset);padding:1px 5px;border-radius:4px;
+  font-size:.9em;overflow-wrap:break-word}
+/* break-all 은 'D1' 같은 두 글자 식별자까지 쪼갠다. 표의 좁은 칸에서 드러난다.
+   break-word 는 한 줄에 못 담을 때만 끊고 최소 폭 계산도 망가뜨리지 않는다. */
+pre{background:var(--surface-inset);padding:14px 16px;border-radius:8px;
+  overflow-x:auto;font-size:13px;line-height:1.6}
+pre code{background:none;padding:0}
+blockquote{margin:16px 0;padding:14px 18px;background:var(--surface-inset);
+  border-radius:10px;color:var(--ink-body)}
+blockquote p:last-child{margin-bottom:0}
+table{border-collapse:collapse;width:100%;margin:14px 0 20px;font-size:14px;min-width:480px}
+.scroll{overflow-x:auto}
+th,td{text-align:left;padding:8px 14px 8px 0;border-bottom:1px solid var(--line-edge);
+  vertical-align:top}
+th{color:var(--ink-muted);font-weight:500;font-size:12.5px;white-space:nowrap}
+td{color:var(--ink-body);font-variant-numeric:tabular-nums}
+td:first-child{color:var(--ink-strong)}
+hr{border:none;border-top:1px solid var(--line-edge);margin:28px 0}
+
+.doc h1{font-size:29px;line-height:1.34;margin:0 0 22px;padding-bottom:16px;
+  border-bottom:2px solid var(--ink-strong)}
+.doc h2{font-size:21px;margin:38px 0 10px;padding-top:14px;border-top:1px solid var(--line-edge)}
+.doc h3{font-size:16.5px;margin:26px 0 8px}
+.doc h4{font-size:15px;margin:20px 0 6px}
+.doc p,.doc li{color:var(--ink-body);max-width:68ch}
+.doc strong{color:var(--ink-strong)}
+.doc ul,.doc ol{padding-left:22px}
+.doc li{margin-bottom:6px}
+
+.contact{display:flex;flex-wrap:wrap;gap:10px 34px;align-items:baseline;margin-top:6px}
+.contact div{display:flex;gap:10px;align-items:baseline}
+.contact dt{color:var(--ink-muted);font-size:12.5px;margin:0}
+.contact dd{margin:0;font-size:14.5px;color:var(--ink-strong)}
+.contact a{font-size:14.5px}
+.sig{color:var(--ink-muted);font-size:13px;margin:18px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="./">&#8592; 처음으로</a>
+<article class="card doc">
+<h1>문항 1 — "GEO를 잘하고 있다"는 것은 무엇을 의미하는가</h1>
+<blockquote>
+<p><strong>한 줄</strong> — GEO는 하나의 사건이 아니라 <strong>닿고, 제대로 다뤄지고, 그것을 확인하는</strong> 세 층이다. 앞의 둘은 성과이고 셋째는 그 성과를 주장으로 남길지 판단으로 남길지를 가른다. <strong>셋째가 없으면 앞의 둘도 믿을 근거가 없다.</strong></p>
+</blockquote>
+<hr>
+<h2>0. 답을 세 가지로 좁히기 전에</h2>
+<p>이 질문이 어려운 이유는 "AI 답변에 우리가 나온다"가 <strong>하나의 사건처럼 들리지만 실제로는 여러 단계</strong>이기 때문이다. 단계마다 통하는 수단이 다르고, 어느 단계에서 막혔는지 모르면 처방도 고를 수 없다.</p>
+<p>그리고 이 분야에는 구조적인 함정이 하나 더 있다. <strong>생성형 엔진은 비결정적이라 같은 질문에도 매번 다르게 답한다.</strong> 그래서 "우리 노출률 12%"라는 숫자는 그 자체로는 참인지 거짓인지 판정할 수 없다. 몇 번 물어서 나온 값인지, 얼마나 흔들리는지를 모르면 다음 달의 15%가 개선인지 잡음인지 알 수 없다.</p>
+<p>기준 세 가지는 이 두 가지 사실 위에서 고른 것이다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th></th>
+<th>기준</th>
+<th>답하는 질문</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>닿는가</strong></td>
+<td>모델이 우리를 알고, 후보에 올리고, 답에 쓰는가</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>어떻게 다뤄지는가</strong></td>
+<td>나오긴 하는데, 어떤 자리에 어떤 내용으로 나오는가</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>효과를 확인할 수 있는가</strong></td>
+<td>지금 쓰는 돈이 작동하는지 판정할 수 있는가</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>기준 1. 닿는가 — 노출은 한 겹이 아니라 세 겹이다</h2>
+<h3>무엇을 뜻하는가</h3>
+<p>"AI 답변에 나온다"는 최소 세 개의 관문을 통과한 결과다.</p>
+<pre><code>[1] 모델이 아는가        학습된 지식 안에 브랜드가 있는가
+        ↓
+[2] 후보에 오르는가       검색·검색증강 단계에서 상위 후보로 들어오는가
+        ↓
+[3] 답에 쓰이는가         후보 중에서 실제로 인용·언급되는가
+</code></pre>
+<p>세 관문은 서로 다른 수단으로 통과한다. 그런데 시중의 GEO 처방은 대개 [3]에 몰려 있다 — 문서를 어떻게 쓰고 어떤 마크업을 붙일 것인가. <strong>[2]에서 걸리면 [3]의 처방은 발동조차 하지 않는다.</strong></p>
+<h3>근거</h3>
+<p>가장 잘 통제된 실험이 이 순서를 지지한다. <a href="https://arxiv.org/abs/2605.25517">What Gets Cited: Competitive GEO in AI Answer Engines</a> (SIGIR 2026 채택)은 인용 선택만 분리하기 위해 다음을 설계에 넣었다.</p>
+<ul>
+<li>두 문서만 주입하는 검색증강 테스트베드 — 검색 단계 변수를 제거</li>
+<li><strong>브랜드 익명화</strong> — 사전학습에서 온 친숙도 효과 제거</li>
+<li><strong>출처 순서 카운터밸런싱</strong> — 위치 편향과 내용 효과를 분리</li>
+<li>두 변형이 정확히 한 요인만 다르게 구성</li>
+</ul>
+<p>규모는 모델당 42,000회 x 6개 모델 = 252,000 trial이다. 결과는 이렇다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>영향</th>
+<th>요인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>가장 큼</strong></td>
+<td>주제 관련성, 목록 내 위치</td>
+</tr>
+<tr>
+<td>일관되게 도움</td>
+<td>명시적 가격 정보, 최신 타임스탬프</td>
+</tr>
+<tr>
+<td><strong>거의 없음</strong></td>
+<td><strong>포맷만 바꾸는 편집</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>이 분야를 비판적으로 검토한 서베이(<a href="https://arxiv.org/abs/2607.14035">arXiv 2607.14035</a>)가 같은 결론을 한 문장으로 요약한다.</p>
+<blockquote>
+<p><em>"a perfectly formulated page that is absent from the top-k cannot contribute."</em>
+(후보 목록에 없는 페이지는 아무리 완벽하게 써도 기여할 수 없다)</p>
+</blockquote>
+<h3>그래서 "잘한다"는 것은</h3>
+<p><strong>어느 관문에서 막혔는지를 알고, 그 관문에 맞는 수단을 쓰는 것이다.</strong> 후보에 못 오르는 브랜드가 문서 포맷을 다듬는 것은 순서가 틀렸다.</p>
+<blockquote>
+<p><strong>널리 퍼졌지만 근거가 약한 두 처방</strong> — <code>llms.txt</code>와 스키마 마크업을 "AI 가시성이 오른다"는 이유로 채택하는 것은 근거가 없다. <strong>구글은 2026-06-15 공식 가이드에서 <code>llms.txt</code>가 Search 랭킹과 AI Overviews에 아무 효과가 없으며 Search는 이 파일을 무시한다고 명시했다.</strong> (OpenAI·Anthropic·Perplexity는 자사 크롤러가 이 파일을 읽는지에 대해 확인도 부인도 하지 않았다.) 로그 분석에서도 AI 봇 요청 5억 1,538만 건 중 이 파일을 건드린 것은 408건이었다. 스키마는 구조화 데이터로서의 값어치가 따로 있으나 <strong>AI 가시성 목적의 통제 실험 근거는 확인되지 않는다.</strong> 둘 다 "하지 마라"가 아니라 <strong>"다른 이유로 하라"</strong>가 맞다.</p>
+</blockquote>
+<hr>
+<h2>기준 2. 어떻게 다뤄지는가 — 등장 여부는 절반의 정보다</h2>
+<h3>무엇을 뜻하는가</h3>
+<p>같은 "언급 1회"라도 전혀 다른 사건이다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>같은 1회지만</th>
+<th>실제로는</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>첫 문단에서 추천됨 / 20개 목록 꼬리에 붙음</td>
+<td>사용자에게 도달하는 정도가 다르다</td>
+</tr>
+<tr>
+<td>조건 없이 불림 / "한국어 지원되는 것" 조건에서만 불림</td>
+<td>잡히는 수요의 크기가 다르다</td>
+</tr>
+<tr>
+<td>경쟁사 대안으로 불림 / 우리 이름을 물었을 때만 나옴</td>
+<td>신규 유입인지 확인 수요인지가 다르다</td>
+</tr>
+<tr>
+<td>사실대로 실림 / 없는 기능이 있다고 실림</td>
+<td>후자는 노출이 아니라 사고다</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>등장률만 재면 이 네 줄이 전부 같은 값으로 뭉개진다.</strong></p>
+<h3>근거 — 직접 측정으로 확인했다</h3>
+<p>이 문서와 함께 제출하는 측정에서 실제로 확인된 사례를 든다. 측정 조건은 아래와 같다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>모델</td>
+<td><code>gpt-5.5-2026-04-23</code> (단일 엔진)</td>
+</tr>
+<tr>
+<td>프롬프트</td>
+<td>18개 (구매 여정 5단계 x 한국어·영어 짝)</td>
+</tr>
+<tr>
+<td>반복</td>
+<td>프롬프트당 20회 고정, 조기 종료 없음</td>
+</tr>
+<tr>
+<td>총 호출</td>
+<td>360회, 실패 0건</td>
+</tr>
+<tr>
+<td>샘플링</td>
+<td>기본값 (temperature 등 미지정)</td>
+</tr>
+<tr>
+<td>웹 검색</td>
+<td>끔 — 모델이 학습으로 아는 것만 분리해 측정</td>
+</tr>
+</tbody>
+</table></div>
+<p>측정 대상 중 국내 협업 툴 한 곳(Swit)의 전체 언급률은 <strong>2.8% (95% CI 1.5~5.0%, n=360)</strong>였다. 이 수치 하나로는 무엇을 해야 할지 알 수 없다. 그런데 질문 종류로 갈라 보면 그림이 완전히 달라진다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>질문 종류</th>
+<th>언급률 (95% CI)</th>
+<th>표본</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>국내 조건을 붙인 질문</td>
+<td><strong>10.0% (5.2~18.5%)</strong></td>
+<td>80</td>
+</tr>
+<tr>
+<td>카테고리 추천 질문</td>
+<td>2.5% (0.7~8.7%)</td>
+<td>80</td>
+</tr>
+<tr>
+<td>문제만 말한 질문</td>
+<td>0.0% (0.0~4.6%)</td>
+<td>80</td>
+</tr>
+<tr>
+<td><strong>경쟁사 대안 질문</strong></td>
+<td><strong>0.0% (0.0~4.6%)</strong></td>
+<td>80</td>
+</tr>
+</tbody>
+</table></div>
+<p>읽는 법은 이렇다 — <strong>"한국어 지원되는 국내 협업 툴"이라는 조건을 붙여야 불려 나오고, 조건 없이 카테고리만 물으면 거의 나오지 않으며, "슬랙 대안 뭐 있어?"에서는 80회 중 한 번도 나오지 않았다.</strong> 마지막 줄이 특히 중요하다. 경쟁사 대안 질문은 이 카테고리에서 상업적으로 가장 값진 자리인데 통째로 비어 있다.</p>
+<p>전체 언급률 2.8%는 이 사실을 하나도 말해주지 않는다.</p>
+<blockquote>
+<p><strong>0%를 읽을 때의 주의</strong> — 80회 중 0회는 "확실히 0%"가 아니라 <strong>"0%부터 약 4.6%까지"</strong>다. 이 구분이 없으면 "완전히 없다"는 과장과 "언젠간 나올 것"이라는 안일함 사이에서 근거 없이 오간다.</p>
+</blockquote>
+<hr>
+<h2>기준 3. 효과를 확인할 수 있는가 — 이것이 앞의 둘을 판단으로 만든다</h2>
+<h3>무엇을 뜻하는가</h3>
+<p><strong>지금 하고 있는 일이 실제로 작동하는지 판정할 수 있는 상태인가.</strong> 기준 1과 2는 성과를 말하고, 기준 3은 그 성과를 신뢰할 수 있는지를 말한다.</p>
+<p>이것을 기준으로 세우는 이유는 <strong>확인 장치가 없으면 근거 없는 처방이 시장에서 그대로 유통되기 때문</strong>이다. 앞에서 든 <code>llms.txt</code>가 그 예다 — 실제 AI 봇 요청 로그에서는 거의 쓰이지 않는데도, 30만 도메인 조사에서 채택률이 약 10%로 나타났다. 무엇이 통하는지 판정할 방법이 없으면 <strong>가장 말이 되는 이야기가 이긴다.</strong></p>
+<blockquote>
+<p>채택률 수치는 모집단에 따라 크게 달라진다(같은 항목에 8.7%·10.13%·51.8%·0.3%가 모두 유통된다). 그래서 위에서 모집단을 함께 적었다. <strong>모집단 없는 채택률은 비교할 수 없는 숫자다.</strong></p>
+</blockquote>
+<h3>근거 (1) — 단일 측정은 측정이 아니다</h3>
+<p>이 논지는 2026년 3월 학술적으로 정식화됐다 (<a href="https://arxiv.org/abs/2603.08924">arXiv 2603.08924</a>).</p>
+<blockquote>
+<p><em>"single-run visibility metrics provide a </em><em>misleadingly precise picture</em><em> of domain performance"</em></p>
+</blockquote>
+<p>논문의 규모는 3개 플랫폼 x 주제 3개 x 주제당 쿼리 200개이고, 두 수집 체제에서 인용 37만여 건씩을 모았다. 핵심 결과는 이렇다.</p>
+<ul>
+<li>부트스트랩 신뢰구간을 씌우면 <strong>도메인 간 차이의 상당수가 측정 잡음 안에 들어간다</strong></li>
+<li>순위 불안정은 상위 도메인만의 문제가 아니라 빈번 인용 도메인 전체에서 나타난다</li>
+<li>변동은 페이지가 바뀌어서가 아니라 <strong>엔진 행동에서 온다</strong></li>
+</ul>
+<p>논문이 든 실례가 특히 선명하다. 한 도메인의 <strong>단일 표본 점추정치는 0.032(그 표본의 95% CI 0.024~0.042)였는데, 아홉 표본 전체의 평균은 0.005</strong>였다. 한 번만 재고 끝냈다면 최상위 인용처로 보고했을 것이고, 이후 모든 표본이 그 결론을 반박한다.</p>
+<p>같은 논문은 개입 효과 주장에도 같은 잣대를 댄다 — <strong>인용 점유율이 8%에서 11%로 올랐다는 관측은 그 플랫폼의 전형적 신뢰구간 폭 안에 들어가므로 개입의 효과로 귀속할 수 없다.</strong></p>
+<blockquote>
+<p><strong>정확히 말하면</strong> — "아무도 신뢰구간을 쓰지 않는다"는 사실이 아니다. 반복 표집과 신뢰구간을 쓰고 계산식까지 공개한 도구가 확인된다. 정확한 진술은 <strong>"표준이 아니다"</strong>이지 "아무도 안 한다"가 아니다. 그리고 이 논문 이후로 그 요구는 업계 의견이 아니라 학술적 근거를 갖는다.</p>
+</blockquote>
+<h3>근거 (2) — 같은 데이터에서 두 방법이 다른 답을 냈다</h3>
+<p>이 기준이 왜 실무에서 중요한지를, 이번 측정에서 실제로 겪은 일로 보인다.</p>
+<p>한국어와 영어로 짝지어 물었을 때, 네 개 브랜드에서 언어별 신뢰구간이 겹치지 않았다. 예를 들어 카카오워크는 한국어 27%, 영어 9%로 구간이 분리됐다. 흔한 결론은 <strong>"한국어 질문에서 유의하게 더 나온다"</strong>이다.</p>
+<p>그런데 <strong>같은 데이터를 다르게 세면 결론이 뒤집힌다.</strong></p>
+<p>360개 관측은 서로 독립이 아니다. 프롬프트 하나당 20회씩 반복해서 얻은 것이라, 같은 프롬프트에서 나온 20개는 서로 닮아 있다. 이것을 무시하고 180개를 독립으로 세면 <strong>신뢰구간이 실제보다 좁아진다.</strong> 프롬프트를 군집으로 잡아 표준오차를 보정하고 로지스틱 회귀로 다시 추정하면 이렇게 된다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>브랜드</th>
+<th>단순 구간 비교</th>
+<th>군집 보정 회귀 (한국어 오즈비)</th>
+<th>판정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zoom</td>
+<td>분리</td>
+<td>0.10 (95% CI 0.02~0.61)</td>
+<td><strong>두 방법 모두 통과</strong></td>
+</tr>
+<tr>
+<td>카카오워크</td>
+<td>분리</td>
+<td>4.14 (95% CI 0.51~33.43)</td>
+<td>회귀에서는 방향 주장 불가</td>
+</tr>
+<tr>
+<td>두레이</td>
+<td>분리</td>
+<td>추정 불가 (완전분리)</td>
+<td>회귀에서는 판정 못 함</td>
+</tr>
+<tr>
+<td>잔디</td>
+<td>분리</td>
+<td>추정 불가 (완전분리)</td>
+<td>회귀에서는 판정 못 함</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>네 개 중 하나만 살아남았다.</strong> 두 결과가 다를 때 어느 쪽을 싣느냐가 곧 그 리포트의 성격이고, 우리는 보수적인 쪽을 결론으로 썼다.</p>
+<blockquote>
+<p>여기에는 한계도 함께 있다. 군집 보정은 군집 수가 충분해야 잘 작동하는데 프롬프트가 18개뿐이라 권장 하한(통상 30개)에 못 미친다. <strong>보정 후에도 구간이 실제보다 좁을 수 있다.</strong> 즉 위 표의 보수적인 판정조차 낙관 쪽으로 치우쳐 있을 가능성이 있다.</p>
+</blockquote>
+<h3>근거 (3) — 추정할 수 없다는 사실도 결과다</h3>
+<p>같은 회귀를 브랜드 20개에 돌렸을 때 <strong>10개만 추정이 가능했다.</strong> 나머지는 완전분리 때문에 최대우도추정이 성립하지 않는다 — 어떤 단계에서 한 번도 언급되지 않으면 계수를 음의 무한대로 보낼수록 우도가 계속 커지기 때문이다.</p>
+<p>Swit이 그 경우다. 경쟁사 대안 질문 80회 중 0회, 문제만 말한 질문 80회 중 0회다.</p>
+<p><strong>이때 숫자를 만들어내지 않는 것이 기준 3이다.</strong> 계수는 뽑으려면 뽑을 수 있고, 소수점 둘째 자리까지 그럴듯하게 나온다. 하지만 그 숫자에는 뜻이 없다. <em>"추정할 수 없었다, 왜냐하면 두 단계에서 한 번도 나오지 않았기 때문이다"</em>가 훨씬 쓸모 있는 보고다.</p>
+<hr>
+<h2>세 기준은 어떻게 맞물리는가</h2>
+<pre><code>[1] 닿는가            상류. 여기서 막히면 아래가 발동하지 않는다
+        ↓
+[2] 어떻게 다뤄지는가   하류. 닿은 다음에야 질을 말할 수 있다
+        ↓
+[3] 확인할 수 있는가    1과 2를 &quot;주장&quot;으로 둘지 &quot;판단&quot;으로 만들지 가른다
+</code></pre>
+<ul>
+<li><strong>1이 없으면 2는 논의 대상이 아니다.</strong> 후보에 못 오른 페이지는 아무리 잘 써도 발동하지 않는다.</li>
+<li><strong>2가 없으면 1은 허수다.</strong> 목록 꼬리에 붙는 언급을 노출로 세면 실제보다 잘하고 있다고 착각한다.</li>
+<li><strong>3이 없으면 1과 2를 개선했는지 알 수 없다.</strong> 다음 달 수치가 올라도 그게 개선인지 잡음인지 판정할 수 없다.</li>
+</ul>
+<p>그래서 <strong>"GEO를 잘한다"는 것은 세 층을 각각 보고, 어디서 막혔는지 짚고, 그 판단이 잡음이 아님을 보일 수 있는 상태</strong>를 말한다.</p>
+<hr>
+<h2>이 답이 말하지 않는 것</h2>
+<p>기준 3을 주장하는 문서가 자기 한계를 빼놓으면 앞뒤가 맞지 않는다.</p>
+<ul>
+<li><strong>엔진 하나만 측정했다.</strong> <code>gpt-5.5-2026-04-23</code> 단일 엔진이다. 플랫폼마다 응답당 인용 개수가 최대 6배까지 다르므로 다른 엔진으로 일반화할 수 없고, <strong>플랫폼을 합산한 단일 점수는 구성비에 좌우된다.</strong></li>
+<li><strong>웹 검색을 끄고 측정했다.</strong> 모델이 학습으로 아는 것만 분리해 잰 것이라, 실시간 검색이 켜진 실제 사용자 화면과 다를 수 있다.</li>
+<li><strong>카테고리 하나다.</strong> 프롬프트는 팀 협업 툴에 한정된다.</li>
+<li><strong>오탐을 피하려고 미탐을 받아들였다.</strong> 일반 명사와 겹치는 표기("플로우", "잔디", "미로" 등)는 일부러 탐지하지 않았다. 해당 브랜드는 실제보다 낮게 집계된다. <strong>측정값이 한 번이라도 헛짚으면 이후 숫자 전체가 못 믿을 것이 되므로 이 방향의 오류를 택했다.</strong></li>
+<li><strong>여기서 잰 것은 [1] 닿는가에 해당한다.</strong> 기준 2의 "틀리지 않게 실리는가"는 이번 측정에서 자동으로 판정하지 못했다. 사실관계 검증은 사람 또는 별도 판정 장치가 필요하다.</li>
+<li><strong>인과가 아니라 상관이다.</strong> 이 측정은 무엇이 노출을 높이는지 실험한 것이 아니라 현재 상태를 관측한 것이다. 인과 주장은 위에 인용한 통제 실험 쪽에서만 가져왔다.</li>
+</ul>
+<hr>
+<h2>요약</h2>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>한 줄</th>
+<th>잘하고 있다는 신호</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 닿는가</strong></td>
+<td>노출은 알기·후보 진입·인용의 세 관문이다</td>
+<td>어느 관문에서 막혔는지 알고 그 관문의 수단을 쓴다</td>
+</tr>
+<tr>
+<td><strong>2. 어떻게 다뤄지는가</strong></td>
+<td>등장 여부는 절반의 정보다</td>
+<td>질문 종류·위치·맥락·사실 정확성으로 갈라 본다</td>
+</tr>
+<tr>
+<td><strong>3. 확인할 수 있는가</strong></td>
+<td>단일 측정은 측정이 아니다</td>
+<td>반복 측정과 신뢰구간으로 개선과 잡음을 가른다</td>
+</tr>
+</tbody>
+</table></div>
+<hr>
+<h2>출처</h2>
+<p>인용한 순서대로. <strong>직접 측정한 것과 인용한 것을 구분했다</strong> — 위 본문에서 "직접 측정"으로 표시하지 않은 수치는 모두 아래 출처에서 온 것이다.</p>
+<div class="scroll"><table>
+<thead>
+<tr>
+<th>출처</th>
+<th>성격</th>
+<th>이 답안에서 쓴 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://arxiv.org/abs/2605.25517">What Gets Cited: Competitive GEO in AI Answer Engines</a> (Vishwakarma 외, SIGIR 2026 채택)</td>
+<td>통제 실험</td>
+<td>인용 선택 요인 순위, 포맷 편집의 무영향</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2607.14035">Critical Survey of GEO 2023–2026</a> (2026-07)</td>
+<td>분야 검토</td>
+<td>상류 단계 우선 판정, 근거 등급 구분</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2603.08924">Quantifying Uncertainty in AI Visibility</a> (Sielinski, 2026-03 제출 · 2026-06 개정)</td>
+<td>측정 신뢰성</td>
+<td>단일 실행의 한계, 단일 표본 실례, 개입 효과 귀속 불가 사례, 플랫폼별 인용 개수 차이</td>
+</tr>
+<tr>
+<td>Google AI 최적화 가이드 <code>llms.txt</code> 절 (2026-06-15)</td>
+<td>벤더 공식</td>
+<td>검색 순위·AI 개요에 효과 없음</td>
+</tr>
+<tr>
+<td>Limy.ai 봇 로그 분석 (2026-05)</td>
+<td>로그 데이터</td>
+<td>AI 봇 요청 5억 1,538만 건 중 408건</td>
+</tr>
+<tr>
+<td>SE Ranking 30만 도메인 조사</td>
+<td>상관 분석</td>
+<td>채택률 약 10%, 인용 빈도와 상관 없음</td>
+</tr>
+<tr>
+<td>Otterly.ai 스키마 통제 실험 (2025-12 ~ 2026-03)</td>
+<td>벤더 통제 실험</td>
+<td>스키마를 성장 전술로 우선하는 것은 투자 배치 오류</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>의도적으로 쓰지 않은 것</strong> — 널리 인용되지만 출처를 거슬러 확인했을 때 다른 이야기였던 수치가 있다. 예를 들어 <em>"구조화 데이터가 GPT-4를 3배 정확하게 만든다"</em>는 엔터프라이즈 데이터베이스 질의응답 벤치마크 결과이지 웹페이지 마크업 이야기가 아니다. 이런 항목은 이 답안에 싣지 않았다.</p>
+</article>
+<section class="card"><h2 style="margin-top:0;border:none;padding:0;font-size:19px">연락처</h2><dl class="contact"><div><dt>이름</dt><dd>이용진</dd></div><div><dt>메일</dt><dd><a href="mailto:tototal5542@gmail.com">tototal5542@gmail.com</a></dd></div><div><dt>전화</dt><dd><a href="tel:+821066844201">010-6684-4201</a></dd></div></dl></section>
+</div>
+</body>
+</html>
